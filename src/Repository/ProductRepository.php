@@ -16,9 +16,33 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    const PRODUCT_MAX_RESULTS = 20;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+    }
+
+    public function findByCode(string $code)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.code = :code')
+            ->setParameter('code', $code)
+            ->orderBy('p.id', 'ASC')
+            ->setMaxResults(self::PRODUCT_MAX_RESULTS)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findOneByCodeAndSupplierId(string $code, int $supplierId)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.code = :code')
+            ->setParameter('code', $code)
+            ->andWhere('p.supplier = :supplierId')
+            ->setParameter('supplierId', $supplierId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     //    /**
