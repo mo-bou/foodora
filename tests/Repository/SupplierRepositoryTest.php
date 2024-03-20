@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class SupplierRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $entityManager;
+    private ?SupplierRepository $repository;
 
 
     protected function setUp(): void
@@ -21,13 +22,13 @@ class SupplierRepositoryTest extends KernelTestCase
             ->get(id: 'doctrine')
             ->getManager();
 
+        $this->repository = $this->entityManager->getRepository(className: Supplier::class);
+
     }
 
     public function testGetSuppliers(): void
     {
-        /** @var SupplierRepository $repo */
-        $repo = $this->entityManager->getRepository(className: Supplier::class);
-        $suppliers = $repo->findAll();
+        $suppliers = $this->repository->findAll();
 
         $this->assertCount(expectedCount: 2, haystack: $suppliers);
     }
@@ -56,28 +57,22 @@ class SupplierRepositoryTest extends KernelTestCase
 
     public function testFindOneByName(): void
     {
-        /** @var SupplierRepository $repo */
-        $repo = $this->entityManager->getRepository(className: Supplier::class);
-
         $this->entityManager->persist(new Supplier(name: 'Gogevi'));
         $this->entityManager->flush();
 
-        $supplier = $repo->findOneByName(name: 'Gogevi');
+        $supplier = $this->repository->findOneByName(name: 'Gogevi');
         $this->assertEquals(expected: 'Gogevi', actual: $supplier->getName());
 
-        $supplier = $repo->findOneByName(name: 'gogevi');
+        $supplier = $this->repository->findOneByName(name: 'gogevi');
         $this->assertEquals(expected: 'Gogevi', actual: $supplier->getName());
     }
 
     public function testFindByCaseInsentive(): void
     {
-        /** @var SupplierRepository $repo */
-        $repo = $this->entityManager->getRepository(className: Supplier::class);
-
         $this->entityManager->persist(new Supplier(name: 'Gogevi'));
         $this->entityManager->flush();
 
-        $suppliers = $repo->findByCaseInsensitive(['name' => 'gogevi']);
+        $suppliers = $this->repository->findByCaseInsensitive(['name' => 'gogevi']);
         foreach ($suppliers as $supplier) {
             $this->assertEquals('gogevi', mb_strtolower($supplier->getName()));
         }
@@ -90,5 +85,6 @@ class SupplierRepositoryTest extends KernelTestCase
         // doing this is recommended to avoid memory leaks
         $this->entityManager->close();
         $this->entityManager = null;
+        $this->repository = null;
     }
 }

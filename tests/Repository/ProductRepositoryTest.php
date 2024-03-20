@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Product;
+use App\Entity\Supplier;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
@@ -10,6 +11,8 @@ class ProductRepositoryTest extends KernelTestCase
 {
     private ?EntityManager $entityManager;
 
+    private ?ProductRepository $productRepository;
+
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -17,13 +20,13 @@ class ProductRepositoryTest extends KernelTestCase
         $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
+
+        $this->productRepository = $this->entityManager->getRepository(className: Product::class);
     }
 
     public function testGetProductsByCode()
     {
-        /** @var ProductRepository $repo */
-        $repo = $this->entityManager->getRepository(className: Product::class);
-        $products = $repo->findByCode(code: 'tom01');
+        $products = $this->productRepository->findByCode(code: 'tom01');
 
         $this->assertCount(expectedCount: 2, haystack: $products, message: 'check that the number of products is correct');
 
@@ -38,9 +41,7 @@ class ProductRepositoryTest extends KernelTestCase
 
     public function testCreateProductWithExistingCodeException()
     {
-        /** @var ProductRepository $repo */
-        $repo = $this->entityManager->getRepository(className: Product::class);
-        $mozzarellaProduct = $repo->findOneBy(criteria: ['code' => 'moz01']);
+        $mozzarellaProduct = $this->productRepository->findOneBy(criteria: ['code' => 'moz01']);
         $supplier = $mozzarellaProduct->getSupplier();
 
         $product = new Product();
@@ -57,15 +58,33 @@ class ProductRepositoryTest extends KernelTestCase
         $this->entityManager->persist(object: $product);
         $this->entityManager->flush();
 
-        $createdProduct = $repo->findOneBy(criteria: ['code' => 'moz02']);
+        $createdProduct = $this->productRepository->findOneBy(criteria: ['code' => 'moz02']);
         $this->assertInstanceOf(expected: Product::class, actual: $createdProduct, message: 'Created Product Successfully by changing the code');
     }
 
-    public function testGetProductByCodeAndSupplierName()
+    public function testFindOneByCodeAndSupplierName()
+    {
+        $product = $this->productRepository->findOneByCodeAndSupplierName(code: 'tom01', supplierName: 'Primeur Deluxe');
+        $this->assertInstanceOf(expected: Product::class, actual: $product);
+    }
+
+    public function testFindOneByCodeAndSupplierNameWithWrongCase()
     {
         /** @var ProductRepository $repo */
         $repo = $this->entityManager->getRepository(className: Product::class);
-        $product = $repo->findOneByCodeAndSupplierName(code: 'tom01', supplierName: 'Primeur Deluxe');
+        $product = $repo->findOneByCodeAndSupplierName(code: 'TOM01', supplierName: 'primeur deluxe');
+        $this->assertInstanceOf(expected: Product::class, actual: $product);
+    }
+
+    public function testFindOneByCodeAndSupplierId()
+    {
+        /** @var Supplier $supplier */
+        $supplier = $this->entityManager->getRepository(className: Supplier::class)->findOneBy(['name' => 'Primeur Deluxe']);
+        $productCode = $supplier->getProducts()[0]->getCode();
+        $product = $this->productRepository->findOneByCodeAndSupplierId(code: $productCode, supplierId: $supplier->getId());
+        $this->assertInstanceOf(expected: Product::class, actual: $product);
+
+        $product = $this->productRepository->findOneByCodeAndSupplierId(code: mb_strtoupper($productCode), supplierId: $supplier->getId());
         $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
@@ -76,5 +95,6 @@ class ProductRepositoryTest extends KernelTestCase
         // doing this is recommended to avoid memory leaks
         $this->entityManager->close();
         $this->entityManager = null;
+        $this->productRepository = null;
     }
 }

@@ -3,9 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use App\Entity\Supplier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,10 +38,10 @@ class ProductRepository extends ServiceEntityRepository
     public function findOneByCodeAndSupplierId(string $code, int $supplierId)
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.code = :code')
-            ->setParameter('code', $code)
+            ->where('LOWER(p.code) = LOWER(:code)')
+            ->setParameter('code', $code, ParameterType::STRING)
             ->andWhere('p.supplier = :supplierId')
-            ->setParameter('supplierId', $supplierId)
+            ->setParameter('supplierId', $supplierId, ParameterType::INTEGER)
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -51,7 +50,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.supplier', 's')
-            ->where('p.code = :code')
+            ->where('LOWER(p.code) = LOWER(:code)')
             ->andWhere('LOWER(s.name) = LOWER(:supplierName)')
             ->setParameter('code', $code)
             ->setParameter('supplierName', $supplierName);
