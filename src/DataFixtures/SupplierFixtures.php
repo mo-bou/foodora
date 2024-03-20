@@ -18,13 +18,12 @@ class SupplierFixtures extends Fixture
             [
                 'name' => 'La rape à fromage',
                 'ref' => 'fromager'
-            ],
+            ]
         ];
 
         $suppliers = [];
         foreach ($suppliersData as $record) {
-            $supplier = new Supplier();
-            $supplier->setName(name: $record['name']);
+            $supplier = new Supplier(name: $record['name']);
             $manager->persist(object: $supplier);
             $suppliers[$record['ref']] = $supplier;
         }

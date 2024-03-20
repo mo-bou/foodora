@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Entity\Supplier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,6 +45,20 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('supplierId', $supplierId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findOneByCodeAndSupplierName(string $code, string $supplierName)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.supplier', 's')
+            ->where('p.code = :code')
+            ->andWhere('LOWER(s.name) = LOWER(:supplierName)')
+            ->setParameter('code', $code)
+            ->setParameter('supplierName', $supplierName);
+
+        return $qb
+                ->getQuery()
+                ->getOneOrNullResult();
     }
 
     //    /**

@@ -1,7 +1,6 @@
 <?php
 
 use App\Entity\Product;
-use App\Entity\Supplier;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
@@ -60,6 +59,14 @@ class ProductRepositoryTest extends KernelTestCase
 
         $createdProduct = $repo->findOneBy(criteria: ['code' => 'moz02']);
         $this->assertInstanceOf(expected: Product::class, actual: $createdProduct, message: 'Created Product Successfully by changing the code');
+    }
+
+    public function testGetProductByCodeAndSupplierName()
+    {
+        /** @var ProductRepository $repo */
+        $repo = $this->entityManager->getRepository(className: Product::class);
+        $product = $repo->findOneByCodeAndSupplierName(code: 'tom01', supplierName: 'Primeur Deluxe');
+        $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
     protected function tearDown(): void

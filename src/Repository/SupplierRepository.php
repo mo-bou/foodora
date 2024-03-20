@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Supplier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,5 +20,40 @@ class SupplierRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Supplier::class);
+    }
+
+    public function findOneByName(string $name)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->andWhere('LOWER(s.name) = LOWER(:name)')
+            ->setParameter(key: 'name', value: $name, type: ParameterType::STRING);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function findByCaseInsensitive(array $criteria, array $orderBy = [], $limit = null, $offset = null)
+    {
+        $qb = $this->createQueryBuilder('s');
+        foreach ($criteria as $propertyName => $propertyValue) {
+            $parameterName = 'prop_'.$propertyName;
+            $qb->andWhere('LOWER(s.'.$propertyName.') = LOWER(:'.$parameterName.')')
+                ->setParameter(key: $parameterName, value: $propertyValue);
+        }
+
+        if (false === empty($orderBy)){
+            foreach ($orderBy as $property => $order) {
+                $qb->addOrderBy(sort: $property, order: $order);
+            }
+        }
+
+        if (null !== $limit) {
+            $qb->setMaxResults(maxResults: $limit);
+        }
+
+        if (null !== $offset) {
+            $qb->setFirstResult(firstResult: $offset);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }
