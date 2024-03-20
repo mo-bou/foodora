@@ -15,7 +15,7 @@ services:
       MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
       MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
       # The two next lines can be removed after initial installation
-      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+      SYMFONY_VERSION: "6.4.*"
       STABILITY: ${STABILITY:-stable}
     volumes:
       - caddy_data:/data
@@ -34,6 +34,12 @@ services:
         published: ${HTTP3_PORT:-443}
         protocol: udp
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+  
 # Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
