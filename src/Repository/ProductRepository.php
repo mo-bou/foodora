@@ -35,7 +35,7 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findOneByCodeAndSupplierId(string $code, int $supplierId)
+    public function findOneByCodeAndSupplierId(string $code, int $supplierId): ?Product
     {
         return $this->createQueryBuilder('p')
             ->where('LOWER(p.code) = LOWER(:code)')
@@ -46,7 +46,7 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findOneByCodeAndSupplierName(string $code, string $supplierName)
+    public function findOneByCodeAndSupplierName(string $code, string $supplierName): ?Product
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.supplier', 's')

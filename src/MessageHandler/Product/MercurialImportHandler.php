@@ -19,7 +19,7 @@ class MercurialImportHandler
         private LoggerInterface $logger,
     ) {
     }
-    public function __invoke(MercurialImport $mercurialImportMessage)
+    public function __invoke(MercurialImport $mercurialImportMessage): void
     {
         $supplierId = $mercurialImportMessage->getSupplierId();
         $csvFilepath = $mercurialImportMessage->getFilename();
@@ -40,6 +40,5 @@ class MercurialImportHandler
 
             $this->messageBus->dispatch(message: $productUpdateMessage);
         }
-
     }
 }

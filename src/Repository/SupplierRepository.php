@@ -22,7 +22,7 @@ class SupplierRepository extends ServiceEntityRepository
         parent::__construct($registry, Supplier::class);
     }
 
-    public function findOneByName(string $name)
+    public function findOneByName(string $name): ?Supplier
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('LOWER(s.name) = LOWER(:name)')

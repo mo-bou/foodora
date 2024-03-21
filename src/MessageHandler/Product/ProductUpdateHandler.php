@@ -6,18 +6,22 @@ use App\Entity\Supplier;
 use App\Message\Product\ProductUpdate;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 class ProductUpdateHandler
 {
+    /** @var ProductRepository */
+    private EntityRepository $productRepository;
+
     public function __construct(
-        private ProductRepository $productRepository,
         private EntityManagerInterface $em,
     ) {
+        $this->productRepository = $this->em->getRepository(className: Product::class);
     }
 
-    public function __invoke(ProductUpdate $productUpdate)
+    public function __invoke(ProductUpdate $productUpdate): void
     {
         $supplierId = $productUpdate->getSupplierId();
         $product = $this->productRepository->findOneByCodeAndSupplierId(code: $productUpdate->getCode(), supplierId: $supplierId);

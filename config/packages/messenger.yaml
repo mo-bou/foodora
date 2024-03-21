@@ -18,10 +18,10 @@ framework:
             App\Message\Product\MercurialImport: async
             App\Message\Product\ProductUpdate: async
 
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'
 #                # replace with your transport name here (e.g., my_transport: 'in-memory://')
 #                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'

@@ -23,7 +23,6 @@ class SupplierRepositoryTest extends KernelTestCase
             ->getManager();
 
         $this->repository = $this->entityManager->getRepository(className: Supplier::class);
-
     }
 
     public function testGetSuppliers(): void
