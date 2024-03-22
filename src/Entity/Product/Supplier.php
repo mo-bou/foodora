@@ -22,6 +22,9 @@ class Supplier
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'supplier', orphanRemoval: true)]
     private Collection $products;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $promotedToHome = null;
+
     public function __construct(string $name)
     {
         $this->products = new ArrayCollection();
@@ -78,6 +81,18 @@ class Supplier
                 $product->setSupplier(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isPromotedToHome(): ?bool
+    {
+        return $this->promotedToHome;
+    }
+
+    public function setPromotedToHome(?bool $promotedToHome): static
+    {
+        $this->promotedToHome = $promotedToHome;
 
         return $this;
     }
