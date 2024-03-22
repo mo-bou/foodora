@@ -1,10 +1,10 @@
 <?php
 
 namespace App\MessageHandler\Product;
-use App\Entity\Product;
-use App\Entity\Supplier;
+use App\Entity\Product\Product;
+use App\Entity\Product\Supplier;
 use App\Message\Product\ProductUpdate;
-use App\Repository\ProductRepository;
+use App\Repository\Product\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

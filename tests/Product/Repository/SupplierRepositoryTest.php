@@ -1,12 +1,10 @@
 <?php
 
-use App\Entity\Supplier;
-use App\Repository\SupplierRepository;
+use App\Entity\Product\Supplier;
+use App\Repository\Product\SupplierRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SupplierRepositoryTest extends KernelTestCase
 {

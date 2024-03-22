@@ -1,8 +1,8 @@
 <?php
 
-use App\Entity\Product;
-use App\Entity\Supplier;
-use App\Repository\ProductRepository;
+use App\Entity\Product\Product;
+use App\Entity\Product\Supplier;
+use App\Repository\Product\ProductRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

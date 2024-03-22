@@ -2,9 +2,9 @@
 
 namespace App\Command\Product;
 
-use App\Entity\Supplier;
+use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
-use App\Repository\SupplierRepository;
+use App\Repository\Product\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;

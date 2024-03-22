@@ -2,7 +2,7 @@
 
 namespace MessageHandler;
 
-use App\Entity\Supplier;
+use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Message\Product\ProductUpdate;
 use App\MessageHandler\Product\MercurialImportHandler;

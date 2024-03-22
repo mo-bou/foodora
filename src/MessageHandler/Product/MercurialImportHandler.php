@@ -2,11 +2,8 @@
 
 namespace App\MessageHandler\Product;
 
-use App\Entity\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Message\Product\ProductUpdate;
-use App\Repository\SupplierRepository;
-use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;

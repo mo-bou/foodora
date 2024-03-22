@@ -1,9 +1,9 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\DataFixtures\Product;
 
-use App\Entity\Product;
-use App\Entity\Supplier;
+use App\Entity\Product\Product;
+use App\Entity\Product\Supplier;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
