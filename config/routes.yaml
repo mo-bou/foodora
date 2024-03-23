@@ -1,5 +1,13 @@
-controllers:
+website_controllers:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/Controller/Website
+        namespace: App\Controller\Website
     type: attribute
+    name_prefix: 'website_'
+
+#admin_controllers:
+#    resource:
+#        path: ../src/Controller/Admin
+#        namespace: App\Controller\Admin
+#    type: attribute
+#    name_prefix: 'admin_'

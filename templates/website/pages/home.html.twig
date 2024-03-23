@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% include 'website/components/product/supplier_list.html.twig' with {
+        'suppliers': promotedSuppliers,
+        'title': 'Promoted Suppliers'
+    } %}
+{% endblock %}

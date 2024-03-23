@@ -1,0 +1,10 @@
+<h2 class="card-title">{{ title ?: 'Suppliers' }}</h2>
+<div class="row row-cols-sm-1 row-cols-md-3">
+    {% for supplier in suppliers %}
+        <div class="col my-sm-2 my-md-0">
+            <div class="card p-3">
+                <h3 class="card-title">{{ supplier.name|capitalize }}</h3>
+            </div>
+        </div>
+    {% endfor %}
+</div>
