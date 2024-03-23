@@ -7,6 +7,7 @@ use App\Entity\Product\Supplier;
 use App\Repository\Product\ProductRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProductRepositoryTest extends KernelTestCase
@@ -92,20 +93,40 @@ class ProductRepositoryTest extends KernelTestCase
 
     public function testFindByCodeOrDescriptionContainingString()
     {
+        /** @var Paginator $products */
         $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom');
         $this->assertCount(expectedCount: 3, haystack: $products);
+        $lowercaseSearchProducts = (array) $products->getIterator();
         $productIdsWithLowerCaseSearch = array_map(callback: function (Product $product) {
             return $product->getId();
-        }, array: $products);
+        }, array: $lowercaseSearchProducts);
 
-        $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'TOM');
-        $this->assertCount(expectedCount: 3, haystack: $products);
+        $products2 = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'TOM');
+        $this->assertCount(expectedCount: 3, haystack: $products2);
+        $uppercaseSearchProduct = (array) $products2->getIterator();
         $productIdsWithUpperCaseSearch = array_map(callback: function (Product $product) {
             return $product->getId();
-        }, array: $products);
+        }, array: $uppercaseSearchProduct);
 
         $this->assertEquals(expected: 0, actual: count(array_diff($productIdsWithLowerCaseSearch, $productIdsWithUpperCaseSearch)));;
     }
+
+    public function testProductPagination()
+    {
+        /** @var Paginator $products */
+        $firstPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1)->getIterator();
+        $secondPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1, page: 2)->getIterator();
+        $thirdPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1, page: 3)->getIterator();
+        $fourthPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1, page: 4)->getIterator();
+
+        $this->assertCount(1, $firstPageResult);
+        $this->assertCount(1, $thirdPageResult);
+        $this->assertCount(0, $fourthPageResult);
+        $this->assertNotEquals($firstPageResult[0]->getId(), $secondPageResult[0]->getId());
+        $this->assertNotEquals($secondPageResult[0]->getId(), $thirdPageResult[0]->getId());
+    }
+
+
 
     protected function tearDown(): void
     {

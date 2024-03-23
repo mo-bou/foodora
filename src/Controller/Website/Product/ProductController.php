@@ -21,11 +21,14 @@ class ProductController extends AbstractController
     public function listProducts(Request $request)
     {
         $query = $request->get('q');
+        $page = $request->get('page', default: 1);
+
         if (null !== $query) {
-            $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: $query);
+            $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: $query, page: $page);
         } else {
-            $products = $this->productRepository->findBy(criteria: [], orderBy: ['id' => 'desc']);
+            $products = $this->productRepository->findAllPaginated(page: $page);
         }
+
 
         return $this->render(view: 'website/pages/product/product_list.html.twig', parameters: [
             'products' => $products,

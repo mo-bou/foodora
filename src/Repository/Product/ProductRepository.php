@@ -5,6 +5,7 @@ namespace App\Repository\Product;
 use App\Entity\Product\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,7 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    const PRODUCT_MAX_RESULTS = 20;
+    const PRODUCT_MAX_RESULTS = 18;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -60,17 +61,31 @@ class ProductRepository extends ServiceEntityRepository
                 ->getOneOrNullResult();
     }
 
-    public function findByCodeOrDescriptionContainingString(string $searchString, int $limit = 0, int $offset = 0)
+    public function findByCodeOrDescriptionContainingString(string $searchString, int $limit = 0, int $page = 1): Paginator
     {
-        $qb = $this->createQueryBuilder('p')
-            ->where('ILIKE(p.code, :searchString) = true')
-            ->orWhere('ILIKE(p.description, :searchString) = true')
-            ->setParameter('searchString', '%'.$searchString.'%')
-            ->setFirstResult(firstResult: $offset);
-        if (0 < $limit) {
-            $qb->setMaxResults($limit);
+        if (0 === $limit) {
+            $limit = self::PRODUCT_MAX_RESULTS;
         }
 
-        return $qb->getQuery()->getResult();
+        $qb = $this->createPaginatedQueryBuilder('p', $limit, $page)
+            ->where('ILIKE(p.code, :searchString) = true')
+            ->orWhere('ILIKE(p.description, :searchString) = true')
+            ->setParameter(key: 'searchString', value: '%'.$searchString.'%', type: ParameterType::STRING);
+
+        return new Paginator($qb, fetchJoinCollection: false);
+    }
+
+    public function findAllPaginated(int $limit = 0, int $page = 1): Paginator
+    {
+        $qb = $this->createPaginatedQueryBuilder('p', $limit, $page);
+
+        return new Paginator($qb, fetchJoinCollection: false);
+    }
+
+    public function createPaginatedQueryBuilder(string $alias, int $limit = 0, int $page = 1)
+    {
+        return $this->createQueryBuilder(alias: $alias)
+            ->setFirstResult(firstResult: ($page - 1) * $limit)
+            ->setMaxResults(maxResults: $limit);
     }
 }
