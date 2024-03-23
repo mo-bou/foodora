@@ -20,7 +20,6 @@ class MercurialImportHandler
     {
         $supplierId = $mercurialImportMessage->getSupplierId();
         $csvFilepath = $mercurialImportMessage->getFilename();
-        $this->logger->info('opening '.$csvFilepath);
         $csvRawData = file_get_contents(filename: $csvFilepath);
         $csvData = preg_split("/\r\n|\n|\r/", $csvRawData);
 

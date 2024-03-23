@@ -1,0 +1,17 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <h1>Import Mercurial</h1>
+    {% for message in app.flashes('dropzone_success') %}
+        <div class="alert alert-success" data-turbo-cache="false">{{ message }}</div>
+    {% endfor %}
+
+    <div class="row">
+        <div id="mercurial_import_form_container" class="col-lg-9 col-xl-6">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-primary">Import</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

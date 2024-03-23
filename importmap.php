@@ -16,6 +16,10 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'admin' => [
+        'path' => './assets/admin.js',
+        'entrypoint' => true,
+    ],
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
@@ -33,6 +37,13 @@ return [
     ],
     'bootstrap/dist/css/bootstrap.min.css' => [
         'version' => '5.3.3',
+        'type' => 'css',
+    ],
+    'tom-select' => [
+        'version' => '2.3.1',
+    ],
+    'tom-select/dist/css/tom-select.default.css' => [
+        'version' => '2.3.1',
         'type' => 'css',
     ],
 ];

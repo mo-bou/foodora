@@ -23,14 +23,18 @@
         "symfony/console": "6.4.*",
         "symfony/dotenv": "6.4.*",
         "symfony/flex": "^2",
+        "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
         "symfony/messenger": "^6.4",
+        "symfony/mime": "6.4.*",
         "symfony/monolog-bundle": "^3.10",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
         "symfony/runtime": "6.4.*",
         "symfony/serializer": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
+        "symfony/ux-autocomplete": "^2.16",
+        "symfony/ux-dropzone": "^2.16",
         "symfony/ux-turbo": "^2.16",
         "symfony/validator": "6.4.*",
         "symfony/yaml": "6.4.*",
@@ -81,7 +85,7 @@
             "./bin/phpunit --testdox"
         ],
         "start-messenger-worker": [
-            ".bin/console messenger:consume async -vv"
+            "./bin/console messenger:consume async -vv"
         ]
     },
     "conflict": {
