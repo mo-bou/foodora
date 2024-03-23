@@ -3,42 +3,21 @@
 {% block body %}
     <h2 class="card-title mb-3">Products</h2>
     <div class="row mb-3">
-        <form action="#" method="get">
-            <div class="row">
-                <div class="col-sm-9 col-md-4 col-xl-3 pe-0 me-0">
-                    <input type="text"
-                           name="q"
-                           placeholder="search"
-                           class="form-control"
-                    >
-                </div>
-                <div class="col-sm-3 col-md-2 col-xl-1 ps-0 ms-0">
-                    <input type="submit"
-                           value="filter"
-                           class="btn btn-outline-info w-100"
-                    >
-                </div>
-            </div>
-        </form>
+        {% include 'website/components/search/search.html.twig' %}
     </div>
     <turboframe id="product_list_items">
+        {% if 0 == products.count() %}
+            No product found.
+        {% else %}
+            {{ products.count() }} product(s) found
+        {% endif %}
         <div class="row row-cols-sm-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
             {% for product in products %}
-                <div id="product_{{ product.id }}" class="col my-sm-2 my-md-2">
-                    <div class="card p-3 h-100 d-flex flex-column">
-                        <h3 class="card-title mb-3">{{ product.description }}</h3>
-                        <div class="mt-auto">
-                            <div class="row mb-3">
-                                <h4 class="card-subtitle text-muted col-sm-9">{{ product.supplier.name }}</h4>
-                                <span class="price col-sm-3 text-end">{{ product.price }} €</span>
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <button class="btn btn-outline-success">Add to Basket</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include 'website/components/product/product_card.html.twig' with { 'product' : product } %}
             {% endfor %}
         </div>
+        {% embed 'website/components/nav/paginator.html.twig' %}
+            {% set items_count = products.count() %}
+        {% endembed %}
     </turboframe>
 {% endblock %}

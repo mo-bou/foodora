@@ -1,0 +1,14 @@
+<div id="product_{{ product.id }}" class="col my-sm-2 my-md-2">
+    <div class="card p-3 h-100 d-flex flex-column">
+        <h3 class="card-title mb-3">{{ product.description }}</h3>
+        <div class="mt-auto">
+            <div class="row mb-3">
+                <h4 class="card-subtitle text-muted col-sm-9">{{ product.supplier.name }}</h4>
+                <span class="price col-sm-3 text-end">{{ product.price }} €</span>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-outline-success">Add to Basket</button>
+            </div>
+        </div>
+    </div>
+</div>

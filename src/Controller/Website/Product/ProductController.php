@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ProductController extends AbstractController
 {
-    const PRODUCTS_PER_PAGE = 20;
+    const PRODUCTS_PER_PAGE = 12;
 
     public function __construct(
         private ProductRepository $productRepository,
@@ -18,20 +18,20 @@ class ProductController extends AbstractController
     }
 
     #[Route(path: '/products', name: 'product_list')]
-    public function listProducts(Request $request)
+    public function list(Request $request)
     {
         $query = $request->get('q');
         $page = $request->get('page', default: 1);
 
         if (null !== $query) {
-            $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: $query, page: $page);
+            $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: $query, limit: self::PRODUCTS_PER_PAGE, page: $page);
         } else {
-            $products = $this->productRepository->findAllPaginated(page: $page);
+            $products = $this->productRepository->findAllPaginated(limit: self::PRODUCTS_PER_PAGE, page: $page);
         }
-
 
         return $this->render(view: 'website/pages/product/product_list.html.twig', parameters: [
             'products' => $products,
+            'items_per_page' => self::PRODUCTS_PER_PAGE,
         ]);
     }
 }

@@ -1,0 +1,26 @@
+{% set nb_pages = (items_count / items_per_page)|round(0, 'ceil') %}
+{% set page = app.request.get('page') ?: 1 %}
+{% if nb_links_displayed_mobile is not defined %}
+    {% set nb_links_displayed_mobile = 3 %}
+{% endif %}
+{% if (1 < nb_pages) %}
+    <nav aria-label="Product Navigation">
+        <ul class="pagination">
+            {% if 1 < page %}
+                <li class="page-item"><a class="page-link" href="{{ path('website_product_list', { 'page' : page-1, 'query': app.request.get('q') }) }}">Prev</a></li>
+            {% endif %}
+            {% for i in 1..nb_pages %}
+                {% set active_class = (i == page ? 'active' : '') %}
+                {% if (i >= page-nb_links_displayed_mobile and i <= page+nb_links_displayed_mobile) %}
+                    {% set page_item_class = '' %}
+                {% else %}
+                    {% set page_item_class = 'd-none d-md-block' %}
+                {% endif %}
+                <li class="page-item {{ page_item_class }}"><a class="page-link {{ active_class }}" href="{{ path('website_product_list', { 'page' : i, 'query': app.request.get('q') }) }}">{{ i }}</a></li>
+            {% endfor %}
+            {% if page < nb_pages %}
+                <li class="page-item"><a class="page-link" href="{{ path('website_product_list', { 'page' : page+1, 'query': app.request.get('q') }) }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
