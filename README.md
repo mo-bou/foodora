@@ -8,4 +8,4 @@ Useful commands :
 
 ``composer start-messenger-worker`` starts the messenger workers
 
-
+You can run the project with docker and access it through https://localhost:4443/

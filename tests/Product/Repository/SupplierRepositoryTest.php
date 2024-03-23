@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Tests\Product\Repository;
+
 use App\Entity\Product\Supplier;
 use App\Repository\Product\SupplierRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
