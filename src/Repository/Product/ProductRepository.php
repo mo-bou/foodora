@@ -50,8 +50,8 @@ class ProductRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.supplier', 's')
-            ->where('LOWER(p.code) = LOWER(:code)')
-            ->andWhere('LOWER(s.name) = LOWER(:supplierName)')
+            ->where('ILIKE(p.code, :code) = true')
+            ->andWhere('ILIKE(s.name, :supplierName) = true')
             ->setParameter('code', $code)
             ->setParameter('supplierName', $supplierName);
 
@@ -60,28 +60,17 @@ class ProductRepository extends ServiceEntityRepository
                 ->getOneOrNullResult();
     }
 
-    //    /**
-    //     * @return Product[] Returns an array of Product objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByCodeOrDescriptionContainingString(string $searchString, int $limit = 0, int $offset = 0)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->where('ILIKE(p.code, :searchString) = true')
+            ->orWhere('ILIKE(p.description, :searchString) = true')
+            ->setParameter('searchString', '%'.$searchString.'%')
+            ->setFirstResult(firstResult: $offset);
+        if (0 < $limit) {
+            $qb->setMaxResults($limit);
+        }
 
-    //    public function findOneBySomeField($value): ?Product
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+    }
 }

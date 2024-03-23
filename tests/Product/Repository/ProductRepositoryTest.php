@@ -88,6 +88,23 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
+    public function testFindByCodeOrDescriptionContainingString()
+    {
+        $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom');
+        $this->assertCount(expectedCount: 3, haystack: $products);
+        $productIdsWithLowerCaseSearch = array_map(callback: function (Product $product) {
+            return $product->getId();
+        }, array: $products);
+
+        $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'TOM');
+        $this->assertCount(expectedCount: 3, haystack: $products);
+        $productIdsWithUpperCaseSearch = array_map(callback: function (Product $product) {
+            return $product->getId();
+        }, array: $products);
+
+        $this->assertEquals(expected: 0, actual: count(array_diff($productIdsWithLowerCaseSearch, $productIdsWithUpperCaseSearch)));;
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();

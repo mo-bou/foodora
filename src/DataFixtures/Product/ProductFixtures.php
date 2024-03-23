@@ -43,7 +43,12 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Mozzarella',
                 'supplier' => $this->getReference(name: 'fromager', class: Supplier::class),
             ],
-
+            [
+                'code' => 'bre01',
+                'price' => 9.50,
+                'description' => 'Tomme de brebis',
+                'supplier' => $this->getReference(name: 'fromager', class: Supplier::class),
+            ],
         ];
 
         foreach ($productData as $record) {
