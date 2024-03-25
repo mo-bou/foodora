@@ -1,6 +1,6 @@
 <?php
 
-namespace MessageHandler;
+namespace App\Tests\Product\MessageHandler;
 
 use App\Entity\Product\Product;
 use App\Entity\Product\Supplier;
