@@ -8,6 +8,8 @@ use App\Repository\Product\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsMessageHandler]
 class ProductUpdateHandler
@@ -17,6 +19,7 @@ class ProductUpdateHandler
 
     public function __construct(
         private EntityManagerInterface $em,
+        private ValidatorInterface $validator,
     ) {
         $this->productRepository = $this->em->getRepository(className: Product::class);
     }
@@ -30,15 +33,20 @@ class ProductUpdateHandler
             $product = new Product();
             $shouldPersist = true;
         }
+
         $product
             ->setSupplier(supplier: $this->em->getReference(entityName: Supplier::class, id: $supplierId))
             ->setPrice(price: $productUpdate->getPrice())
             ->setCode(code: $productUpdate->getCode())
             ->setDescription(description: $productUpdate->getDescription());
 
-        if (true === $shouldPersist) {
-            $this->em->persist($product);
+        $errors = $this->validator->validate($product);
+
+        if (0 === count($errors)) {
+            if (true === $shouldPersist) {
+                $this->em->persist($product);
+            }
+            $this->em->flush();
         }
-        $this->em->flush();
     }
 }

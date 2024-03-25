@@ -5,23 +5,27 @@ namespace App\Entity\Product;
 use App\Repository\Product\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\UniqueConstraint(name: "product_code_supplier_id", columns: ["code", "supplier_id"])]
 class Product
 {
+    const MAX_PRICE = 1000;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column(length: 6)]
+    #[Assert\NotBlank(), Assert\Length(max: 6, maxMessage: 'The code should not contain more than 6 characters')]
     private ?string $code = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column, Assert\Positive, Assert\LessThan(self::MAX_PRICE)]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]

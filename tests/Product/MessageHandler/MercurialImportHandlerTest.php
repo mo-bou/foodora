@@ -11,6 +11,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MercurialImportHandlerTest extends KernelTestCase
 {
@@ -37,10 +39,13 @@ CSV;
     {
         $messageBusMock = $this->createMock(originalClassName: MessageBusInterface::class);
         $loggerMock = $this->createMock(originalClassName: LoggerInterface::class);
+        $validatorMock = $this->createMock(ValidatorInterface::class);
+        $validatorMock->expects($this->exactly(3))->method('validate')->willReturn(new ConstraintViolationList([]));
+
         $repository = $this->entityManager->getRepository(Supplier::class);
         $supplier = $repository->findOneByName('Primeur Deluxe');
 
-        $handler = new MercurialImportHandler(messageBus: $messageBusMock, logger: $loggerMock);
+        $handler = new MercurialImportHandler(messageBus: $messageBusMock, logger: $loggerMock, validator: $validatorMock);
         $message = new MercurialImport(filename: self::CSV_EXAMPLE_LOCATION, supplierId: $supplier->getId());
 
         $messageBusMock
