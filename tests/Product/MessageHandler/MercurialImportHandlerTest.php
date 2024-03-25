@@ -63,13 +63,14 @@ CSV;
             ->with(self::isInstanceOf(className: ProductUpdate::class))
             ->willReturn(new Envelope(message:$message));
 
-        $handler(mercurialImportMessage: $message);
+        $mailerMock
+            ->expects($this->once())
+            ->method('send');
 
-        //Todo : test email was sent
+        $handler(mercurialImportMessage: $message);
     }
 
     protected function tearDown(): void
     {
-        $this->entityManager = null;
     }
 }
