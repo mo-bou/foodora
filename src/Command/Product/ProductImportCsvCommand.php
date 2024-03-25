@@ -6,6 +6,7 @@ use App\Entity\Product\Mercurial;
 use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Repository\Product\SupplierRepository;
+use App\Service\Product\MercurialImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -18,7 +19,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
@@ -28,9 +28,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class ProductImportCsvCommand extends Command
 {
     public function __construct(
-        private ParameterBagInterface $parameterBag,
         private MessageBusInterface $messageBus,
         private EntityManagerInterface $entityManager,
+        private MercurialImportService $mercurialImportService
     )
     {
         parent::__construct();
@@ -100,22 +100,10 @@ class ProductImportCsvCommand extends Command
             }
         }
 
-        $tmpDir = $this->parameterBag->get(name: 'app.product.mercurial_csv_tmp_dir');
-        if (!file_exists($tmpDir)) {
-            mkdir(directory: $tmpDir, permissions: 0755, recursive: true);
-        }
+        $filename = $this->mercurialImportService->storeMercurialFileContents(fileContents: $fileRawData, supplierName: $supplierName);
 
-        $now = new \DateTime();
-        $filepath = sprintf('%smercurial_%s_%s.csv', $tmpDir, $supplierName, $now->format(format: 'YmdHis'));
-        file_put_contents(filename: $filepath, data: $fileRawData);
-        $message = new MercurialImport(filename: $filepath, supplierId: $supplier->getId());
+        $message = new MercurialImport(filename: $filename, supplierId: $supplier->getId());
         $this->messageBus->dispatch($message);
-
-        $mercurial = new Mercurial();
-        $mercurial->setSupplier(supplier: $supplier);
-        $mercurial->setFilePath(filePath: $filepath);
-        $this->entityManager->persist($mercurial);
-        $this->entityManager->flush();
 
         $io->success("The specified file has been added to the update queue.");
         return Command::SUCCESS;

@@ -2,11 +2,13 @@
 
 namespace App\Tests\Product\MessageHandler;
 
+use App\Entity\Product\Mercurial;
 use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Message\Product\ProductUpdate;
 use App\MessageHandler\Product\MercurialImportHandler;
 use App\Repository\Product\SupplierRepository;
+use App\Service\Product\MercurialImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -14,6 +16,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -44,18 +47,31 @@ CSV;
         $loggerMock = $this->createMock(originalClassName: LoggerInterface::class);
         $validatorMock = $this->createMock(ValidatorInterface::class);
         $mailerMock = $this->createMock(MailerInterface::class);
+        $sluggerMock = $this->createMock(SluggerInterface::class);
+
         $parameterBag = new ParameterBag();
         $parameterBag->set('app.report.mail_to', 'test@example.org');
         $parameterBag->set('dev.email', 'test@example.com');
 
-        $validatorMock->expects($this->exactly(3))->method('validate')->willReturn(new ConstraintViolationList([]));
+        $validatorMock
+            ->expects($this->exactly(3))
+            ->method('validate')
+            ->willReturn(new ConstraintViolationList([]));
 
         /** @var SupplierRepository $repository */
         $repository = $this->entityManager->getRepository(Supplier::class);
         $supplier = $repository->findOneByName('Primeur Deluxe');
 
-        $handler = new MercurialImportHandler(messageBus: $messageBusMock, logger: $loggerMock, validator: $validatorMock, entityManager: $this->entityManager, parameterBag: $parameterBag, mailer: $mailerMock);
-        $message = new MercurialImport(filename: self::CSV_EXAMPLE_LOCATION, supplierId: $supplier->getId());
+        $handler = new MercurialImportHandler(
+            messageBus: $messageBusMock,
+            logger: $loggerMock,
+            validator: $validatorMock,
+            entityManager: $this->entityManager,
+            parameterBag: $parameterBag,
+            mailer: $mailerMock,
+            mercurialImportService: new MercurialImportService(mercurialDirectory: '/tmp', slugger: $sluggerMock)
+        );
+        $message = new MercurialImport(filename: 'test.csv', supplierId: $supplier->getId());
 
         $messageBusMock
             ->expects(self::exactly(count: 3))
@@ -68,6 +84,10 @@ CSV;
             ->method('send');
 
         $handler(mercurialImportMessage: $message);
+
+        /** @var Mercurial $mercurialEntity */
+        $mercurialEntity = $this->entityManager->getRepository(Mercurial::class)->findOneBy(['supplier'=> $supplier->getId()]);
+        $this->assertEquals($mercurialEntity->getFilename(), $message->getFilename());
     }
 
     protected function tearDown(): void

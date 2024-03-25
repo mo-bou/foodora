@@ -14,7 +14,7 @@ class Mercurial
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $filePath = null;
+    private ?string $filename = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -32,14 +32,14 @@ class Mercurial
         return $this;
     }
 
-    public function getFilePath(): ?string
+    public function getFilename(): ?string
     {
-        return $this->filePath;
+        return $this->filename;
     }
 
-    public function setFilePath(string $filePath): static
+    public function setFilename(string $filename): static
     {
-        $this->filePath = $filePath;
+        $this->filename = $filename;
 
         return $this;
     }

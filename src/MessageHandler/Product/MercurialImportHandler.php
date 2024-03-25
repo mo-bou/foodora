@@ -2,9 +2,11 @@
 
 namespace App\MessageHandler\Product;
 
+use App\Entity\Product\Mercurial;
 use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Message\Product\ProductUpdate;
+use App\Service\Product\MercurialImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -27,14 +29,21 @@ class MercurialImportHandler
         private EntityManagerInterface $entityManager,
         private ParameterBagInterface $parameterBag,
         private MailerInterface $mailer,
+        private MercurialImportService $mercurialImportService,
     ) {
     }
     public function __invoke(MercurialImport $mercurialImportMessage): void
     {
         $supplierId = $mercurialImportMessage->getSupplierId();
-        $csvFilepath = $mercurialImportMessage->getFilename();
-        $csvRawData = file_get_contents(filename: $csvFilepath);
+        $mercurial = new Mercurial();
+        $mercurial->setFilename($mercurialImportMessage->getFilename());
+        $mercurial->setSupplier($this->entityManager->getReference(Supplier::class, $supplierId));
+        $this->entityManager->persist($mercurial);
+        $this->entityManager->flush();
+
+        $csvRawData = $this->mercurialImportService->getMercurialFileContents($mercurialImportMessage->getFilename());
         $csvData = preg_split("/\r\n|\n|\r/", $csvRawData);
+
         $nbInvalidRows = 0;
         $nbDispatchedRows = 0;
         $productUpdatesStatus = [];

@@ -5,6 +5,7 @@ namespace App\Controller\Admin\Product;
 use App\Entity\Product\Mercurial;
 use App\Form\Product\MercurialImportType;
 use App\Message\Product\MercurialImport;
+use App\Service\Product\MercurialImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -18,10 +19,9 @@ use Symfony\UX\Turbo\TurboBundle;
 class MercurialImportController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
         private MessageBusInterface $messageBus,
+        private MercurialImportService $mercurialImportService
     ){
-
     }
     #[Route(path: 'product/mercurial/import', name: 'product_mercurial_import')]
     public function import(Request $request, SluggerInterface $slugger): Response
@@ -31,35 +31,39 @@ class MercurialImportController extends AbstractController
         $emptyForm = clone $form ;
 
         $form->handleRequest(request: $request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $mercurialImportFile */
-            $mercurialImportFile = $form->get('mercurial')->getData();
-            $supplierName = $mercurialImport->getSupplier()->getName();
-            $uploadDirectory = $this->getParameter('app.product.mercurial_csv_tmp_dir');
-            $filename = $slugger->slug($supplierName).'_'.uniqid().'.'.$mercurialImportFile->guessExtension();
-            $mercurialImportFile->move(directory: $this->getParameter('app.product.mercurial_csv_tmp_dir'), name: $filename);
-            $mercurialImport->setFilePath(filePath: $filename);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                /** @var UploadedFile $mercurialImportFile */
+                $mercurialImportFile = $form->get('mercurial')->getData();
+                $filename = $this->mercurialImportService->storeMercurialFileContents(
+                    fileContents: $mercurialImportFile->getContent(),
+                    supplierName: $mercurialImport->getSupplier()->getName()
+                );
 
-            $this->em->persist($mercurialImport);
-            $this->em->flush();
+                $mercurialImportMessage = new MercurialImport(
+                    filename: $filename,
+                    supplierId: $mercurialImport->getSupplier()->getId()
+                );
+                $this->messageBus->dispatch(message: $mercurialImportMessage);
 
-            $mercurialImportMessage = new MercurialImport(
-                filename: $uploadDirectory.'/'.$filename,
-                supplierId: $mercurialImport->getSupplier()->getId()
-            );
-
-            $this->messageBus->dispatch(message: $mercurialImportMessage);
-
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                return $this->render('admin/product/mercurial-import.success.html.twig', ['supplier' => $mercurialImport->getSupplier()]);
+                if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                    // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                    return $this->render('admin/product/mercurial-import.success.html.twig', ['supplier' => $mercurialImport->getSupplier()]);
+                }
+            } else {
+                if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                    // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                    return $this->render('admin/product/mercurial-import.failure.html.twig', ['errors' => $form->getErrors(true)]);
+                }
             }
+
         }
 
-
         return $this->render('admin/product/mercurial-import.html.twig', [
-            'form' => $emptyForm->createView()
+            'form' => $emptyForm->createView(),
+            'errors' => $form->getErrors(true)
         ]);
     }
 }

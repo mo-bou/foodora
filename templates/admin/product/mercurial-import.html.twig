@@ -7,6 +7,11 @@
     {% endfor %}
 
     <div class="row">
+        {% for error in errors %}
+            <div class="alert alert-danger" data-turbo-cache="false">{{ error.message }}</div>
+        {% endfor %}
+    </div>
+    <div class="row">
         <div id="mercurial_import_form_container" class="col-lg-9 col-xl-6">
             {{ form_start(form) }}
                 {{ form_widget(form) }}
