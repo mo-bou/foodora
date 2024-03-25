@@ -2,6 +2,7 @@
 
 namespace App\Command\Product;
 
+use App\Entity\Product\Mercurial;
 use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Repository\Product\SupplierRepository;
@@ -109,6 +110,12 @@ class ProductImportCsvCommand extends Command
         file_put_contents(filename: $filepath, data: $fileRawData);
         $message = new MercurialImport(filename: $filepath, supplierId: $supplier->getId());
         $this->messageBus->dispatch($message);
+
+        $mercurial = new Mercurial();
+        $mercurial->setSupplier(supplier: $supplier);
+        $mercurial->setFilePath(filePath: $filepath);
+        $this->entityManager->persist($mercurial);
+        $this->entityManager->flush();
 
         $io->success("The specified file has been added to the update queue.");
         return Command::SUCCESS;

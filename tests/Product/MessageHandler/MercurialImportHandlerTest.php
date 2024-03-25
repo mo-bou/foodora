@@ -10,6 +10,8 @@ use App\Repository\Product\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -41,13 +43,18 @@ CSV;
         $messageBusMock = $this->createMock(originalClassName: MessageBusInterface::class);
         $loggerMock = $this->createMock(originalClassName: LoggerInterface::class);
         $validatorMock = $this->createMock(ValidatorInterface::class);
+        $mailerMock = $this->createMock(MailerInterface::class);
+        $parameterBag = new ParameterBag();
+        $parameterBag->set('app.report.mail_to', 'test@example.org');
+        $parameterBag->set('dev.email', 'test@example.com');
+
         $validatorMock->expects($this->exactly(3))->method('validate')->willReturn(new ConstraintViolationList([]));
 
         /** @var SupplierRepository $repository */
         $repository = $this->entityManager->getRepository(Supplier::class);
         $supplier = $repository->findOneByName('Primeur Deluxe');
 
-        $handler = new MercurialImportHandler(messageBus: $messageBusMock, logger: $loggerMock, validator: $validatorMock);
+        $handler = new MercurialImportHandler(messageBus: $messageBusMock, logger: $loggerMock, validator: $validatorMock, entityManager: $this->entityManager, parameterBag: $parameterBag, mailer: $mailerMock);
         $message = new MercurialImport(filename: self::CSV_EXAMPLE_LOCATION, supplierId: $supplier->getId());
 
         $messageBusMock
@@ -57,6 +64,8 @@ CSV;
             ->willReturn(new Envelope(message:$message));
 
         $handler(mercurialImportMessage: $message);
+
+        //Todo : test email was sent
     }
 
     protected function tearDown(): void

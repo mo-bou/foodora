@@ -1,0 +1,28 @@
+<h1>MercurialImportStatus</h1>
+
+<p>Mercurial Import Completed: {{ file }}</p>
+<p>{{ nb_dispatched }}/{{ nb_dispatched + nb_invalid }} products updated for supplier
+    <strong>{{ supplier.name }}</strong></p>
+
+<h2>Details</h2>
+<table>
+    <tr>
+        <th>code</th>
+        <th>status</th>
+        <th>error</th>
+    </tr>
+    {% for product_update_status in product_updates_status %}
+        <tr>
+            <td>{{ product_update_status.code  }}</td>
+            <td>{{ product_update_status.status  }}</td>
+            <td>
+                {% if product_update_status.errors is defined %}
+                    <ul>
+                    {% for error in product_update_status.errors %}
+                        <li>{{ error.propertyPath~':'~error.message }}</li>
+                    {% endfor %}</td>
+                    </ul>
+                {% endif %}
+        </tr>
+    {% endfor %}
+</table>

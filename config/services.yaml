@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.product.mercurial_csv_tmp_dir: '%kernel.project_dir%/var/tmp/mercurial/'
+    app.report.mail_to: 'test@example.org'
+    dev.email: 'test@example.com'
 
 services:
     # default configuration for services in *this* file

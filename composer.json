@@ -25,6 +25,7 @@
         "symfony/flex": "^2",
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
+        "symfony/mailer": "6.4.*",
         "symfony/messenger": "^6.4",
         "symfony/mime": "6.4.*",
         "symfony/monolog-bundle": "^3.10",
@@ -88,7 +89,7 @@
             "./bin/console messenger:consume async -vv"
         ],
         "analyze": [
-            "php ./vendor/bin/phpstan analyse"
+            "php -d memory_limit=512M ./vendor/bin/phpstan analyse"
         ]
     },
     "conflict": {
