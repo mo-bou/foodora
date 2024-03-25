@@ -4,7 +4,9 @@ namespace App\Repository\Product;
 
 use App\Entity\Product\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,7 +27,11 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function findByCode(string $code)
+    /**
+     * @param string $code
+     * @return iterable<int, Product>
+     */
+    public function findByCode(string $code): iterable
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.code = :code')
@@ -61,6 +67,12 @@ class ProductRepository extends ServiceEntityRepository
                 ->getOneOrNullResult();
     }
 
+    /**
+     * @param string $searchString
+     * @param int $limit
+     * @param int $page
+     * @return Paginator<Product>
+     */
     public function findByCodeOrDescriptionContainingString(string $searchString, int $limit = 0, int $page = 1): Paginator
     {
         if (0 === $limit) {
@@ -75,6 +87,11 @@ class ProductRepository extends ServiceEntityRepository
         return new Paginator($qb, fetchJoinCollection: false);
     }
 
+    /**
+     * @param int $limit
+     * @param int $page
+     * @return Paginator<Product>
+     */
     public function findAllPaginated(int $limit = 0, int $page = 1): Paginator
     {
         $qb = $this->createPaginatedQueryBuilder('p', $limit, $page);
@@ -82,7 +99,7 @@ class ProductRepository extends ServiceEntityRepository
         return new Paginator($qb, fetchJoinCollection: false);
     }
 
-    public function createPaginatedQueryBuilder(string $alias, int $limit = 0, int $page = 1)
+    public function createPaginatedQueryBuilder(string $alias, int $limit = 0, int $page = 1): QueryBuilder
     {
         return $this->createQueryBuilder(alias: $alias)
             ->setFirstResult(firstResult: ($page - 1) * $limit)

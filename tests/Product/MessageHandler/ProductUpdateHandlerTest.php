@@ -18,17 +18,12 @@ class ProductUpdateHandlerTest extends KernelTestCase
 {
     private ?EntityManagerInterface $entityManager;
 
-    private MessageBusInterface $messageBus;
-
-    private ?ValidatorInterface $validator;
-
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
         $container = $kernel->getContainer();
 
         $this->entityManager = $container->get(id: 'doctrine')->getManager();
-        $this->validator = Validation::createValidator();
     }
 
     public function testProductUpdateHandler(): void

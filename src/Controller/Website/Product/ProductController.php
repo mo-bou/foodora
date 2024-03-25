@@ -5,6 +5,7 @@ namespace App\Controller\Website\Product;
 use App\Repository\Product\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ProductController extends AbstractController
@@ -18,7 +19,7 @@ class ProductController extends AbstractController
     }
 
     #[Route(path: '/products', name: 'product_list')]
-    public function list(Request $request)
+    public function list(Request $request): Response
     {
         $query = $request->get('q');
         $page = $request->get('page', default: 1);

@@ -15,13 +15,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ProductUpdateHandler
 {
     /** @var ProductRepository */
-    private EntityRepository $productRepository;
+    private ProductRepository $productRepository;
 
     public function __construct(
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
     ) {
-        $this->productRepository = $this->em->getRepository(className: Product::class);
+        /** @var ProductRepository $productRepository */
+        $productRepository = $this->em->getRepository(className: Product::class);
+        $this->productRepository = $productRepository;
     }
 
     public function __invoke(ProductUpdate $productUpdate): void

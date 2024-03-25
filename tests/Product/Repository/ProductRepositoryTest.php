@@ -27,7 +27,7 @@ class ProductRepositoryTest extends KernelTestCase
         $this->productRepository = $this->entityManager->getRepository(className: Product::class);
     }
 
-    public function testGetProductsByCode()
+    public function testGetProductsByCode(): void
     {
         $products = $this->productRepository->findByCode(code: 'tom01');
 
@@ -42,7 +42,7 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertNotEquals(expected: $supplierNames[0], actual: $supplierNames[1], message: 'Get 2 products with the same code from different suppliers');
     }
 
-    public function testCreateProductWithExistingCodeException()
+    public function testCreateProductWithExistingCodeException(): void
     {
         $mozzarellaProduct = $this->productRepository->findOneBy(criteria: ['code' => 'moz01']);
         $supplier = $mozzarellaProduct->getSupplier();
@@ -65,13 +65,13 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertInstanceOf(expected: Product::class, actual: $createdProduct, message: 'Created Product Successfully by changing the code');
     }
 
-    public function testFindOneByCodeAndSupplierName()
+    public function testFindOneByCodeAndSupplierName(): void
     {
         $product = $this->productRepository->findOneByCodeAndSupplierName(code: 'tom01', supplierName: 'Primeur Deluxe');
         $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
-    public function testFindOneByCodeAndSupplierNameWithWrongCase()
+    public function testFindOneByCodeAndSupplierNameWithWrongCase(): void
     {
         /** @var ProductRepository $repo */
         $repo = $this->entityManager->getRepository(className: Product::class);
@@ -79,7 +79,7 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
-    public function testFindOneByCodeAndSupplierId()
+    public function testFindOneByCodeAndSupplierId(): void
     {
         /** @var Supplier $supplier */
         $supplier = $this->entityManager->getRepository(className: Supplier::class)->findOneBy(['name' => 'Primeur Deluxe']);
@@ -91,9 +91,8 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertInstanceOf(expected: Product::class, actual: $product);
     }
 
-    public function testFindByCodeOrDescriptionContainingString()
+    public function testFindByCodeOrDescriptionContainingString(): void
     {
-        /** @var Paginator $products */
         $products = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom');
         $this->assertCount(expectedCount: 3, haystack: $products);
         $lowercaseSearchProducts = (array) $products->getIterator();
@@ -111,9 +110,8 @@ class ProductRepositoryTest extends KernelTestCase
         $this->assertEquals(expected: 0, actual: count(array_diff($productIdsWithLowerCaseSearch, $productIdsWithUpperCaseSearch)));;
     }
 
-    public function testProductPagination()
+    public function testProductPagination(): void
     {
-        /** @var Paginator $products */
         $firstPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1)->getIterator();
         $secondPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1, page: 2)->getIterator();
         $thirdPageResult = $this->productRepository->findByCodeOrDescriptionContainingString(searchString: 'tom', limit: 1, page: 3)->getIterator();

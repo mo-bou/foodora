@@ -19,6 +19,7 @@ class Supplier
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
 
+    /** @var ArrayCollection <int, Product>  */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'supplier', orphanRemoval: true)]
     private Collection $products;
 

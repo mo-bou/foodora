@@ -6,6 +6,7 @@ use App\Entity\Product\Supplier;
 use App\Message\Product\MercurialImport;
 use App\Message\Product\ProductUpdate;
 use App\MessageHandler\Product\MercurialImportHandler;
+use App\Repository\Product\SupplierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -42,6 +43,7 @@ CSV;
         $validatorMock = $this->createMock(ValidatorInterface::class);
         $validatorMock->expects($this->exactly(3))->method('validate')->willReturn(new ConstraintViolationList([]));
 
+        /** @var SupplierRepository $repository */
         $repository = $this->entityManager->getRepository(Supplier::class);
         $supplier = $repository->findOneByName('Primeur Deluxe');
 

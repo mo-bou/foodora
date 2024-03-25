@@ -31,7 +31,14 @@ class SupplierRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findByCaseInsensitive(array $criteria, array $orderBy = [], $limit = null, $offset = null)
+    /**
+     * @param array<string, mixed> $criteria
+     * @param array<string, mixed> $orderBy
+     * @param int $limit
+     * @param int $offset
+     * @return iterable<int, Supplier>
+     */
+    public function findByCaseInsensitive(array $criteria, array $orderBy = [], $limit = null, $offset = null): iterable
     {
         $qb = $this->createQueryBuilder('s');
         foreach ($criteria as $propertyName => $propertyValue) {

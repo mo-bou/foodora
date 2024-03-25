@@ -33,7 +33,7 @@ class MercurialImportHandler
             $productUpdateMessage = new ProductUpdate(
                 description: $productData[0],
                 code : $productData[1],
-                price: $productData[2],
+                price: (float) $productData[2],
                 supplierId: $supplierId,
             );
 
@@ -43,7 +43,7 @@ class MercurialImportHandler
                 $this->messageBus->dispatch(message: $productUpdateMessage);
             } else {
                 //TODO : Implement the desired behavior for invalid messages
-                $this->logger->error(sprintf('invalid Product data : %s', $errors));
+                $this->logger->error(sprintf('invalid Product data : %s', $errors->__toString()));
             }
         }
     }
