@@ -32,6 +32,9 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $priceHistory = null;
+
 
     public function getCode(): ?string
     {
@@ -89,6 +92,32 @@ class Product
     public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    public function addPriceHistory(float $newPrice): static
+    {
+        $history = $this->getPriceHistory();
+        if (true === is_null($history)) {
+            $history = [];
+        }
+        $history[] = ['date' => new \DateTime(), 'price' => $newPrice];
+
+        return $this->setPriceHistory($history);
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getPriceHistory(): ?array
+    {
+        return $this->priceHistory;
+    }
+
+    public function setPriceHistory(?array $priceHistory): static
+    {
+        $this->priceHistory = $priceHistory;
 
         return $this;
     }
