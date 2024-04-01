@@ -1,0 +1,35 @@
+<h1>{{ mercurial.supplier.name }} : {{ mercurial.filename }}</h1>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <td>code</td>
+            <td>desc</td>
+            <td>price</td>
+            <td>valid</td>
+            <td>action</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for productUpdate in productUpdates %}
+            {% set action = productUpdate.code in existingProductCodes ? 'update' : 'create' %}
+            {% set valid = errors[productUpdate.code] is empty %}
+            <tr class="{% if not valid %}table-danger{% endif %}">
+                <td>{{ productUpdate.code }}</td>
+                <td>{{ productUpdate.description }}</td>
+                <td>{{ productUpdate.price }}</td>
+                <td>{% if valid %}
+                        <span class="badge-success">OK</span>
+                    {% else %}
+                        <span class="badge-error">KO</span>
+                        <ul>
+                            {% for error in errors[productUpdate.code] %}
+                                <li>{{ error.propertyPath }} : {{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </td>
+                <td>{{ action }}</td>
+            </tr>
+    {% endfor %}
+    </tbody>
+</table>

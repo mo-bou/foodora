@@ -97,7 +97,7 @@ class MercurialImportHandler
             ->from(new Address(address: $this->parameterBag->get('dev.email'), name: 'foodmarket'))
             ->to(new Address(address: $this->parameterBag->get('app.report.mail_to')))
             ->subject(subject: 'Mercurial Import Report : '.$mercurialImportMessage->getFilename())
-            ->htmlTemplate('mail/reporting/product/mercurial-import.html.twig')
+            ->htmlTemplate('mail/reporting/product/mercurial_import.html.twig')
             ->context([
                 'supplier' => $supplier,
                 'file' => $mercurialImportMessage->getFilename(),

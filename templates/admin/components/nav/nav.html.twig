@@ -1,20 +1,25 @@
-<div class="flex-shrink-0 p-3 bg-black  " style="width: 280px;">
-    <ul class="list-unstyled ps-0">
-        <li class="mb-1">
-            <a href="{{ path('admin_index') }}" class="btn" >Dashboard</a>
-        </li>
-        <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                Products
-            </button>
-            <div class="collapse" id="orders-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small mx-4">
-                    <li><a href="{{ path('admin_product_mercurial_import') }}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Mercurial Import</a></li>
-                    <li><a href="{{ path('admin_product_mercurial_import') }}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Mercurial Import</a></li>
-                    <li><a href="{{ path('admin_product_mercurial_import') }}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Mercurial Import</a></li>
-                </ul>
-            </div>
-        </li>
-        <li class="border-top my-3"></li>
-    </ul>
+<div class="sidebar bg-black">
+    <nav class="p-3">
+        <ul class="list-unstyled">
+            <li class="mb-3">
+                <a href="{{ path('admin_index') }}" class="btn">Dashboard</a>
+            </li>
+            <li class="mb-3">
+                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                        data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                    Products
+                </button>
+                <div class="collapse" id="orders-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small mx-4">
+                        <li><a href="{{ path('admin_product_mercurial_list') }}"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">Mercurial
+                                List</a></li>
+                        <li><a href="{{ path('admin_product_mercurial_import') }}"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">Mercurial
+                                Import</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </nav>
 </div>

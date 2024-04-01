@@ -1,0 +1,28 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <h1>Mercurial List</h1>
+    <div class="row" data-controller="admin--product--mercurial">
+        <div class="col-md-4 p-0">
+            <div class="flex-shrink-0">
+                {% for mercurial in mercurials %}
+                    <div class="p-3 border-bottom border-light-subtle mercurial-card" data-admin--product--mercurial-target="card">
+                        {% if mercurial.status == 'created' %}
+                            {% set badge %}
+                                <sup><span class="badge text-bg-primary text-">created</span></sup>
+                            {% endset %}
+                        {% elseif mercurial.status == 'validated' %}
+                            {% set badge %}
+                                <span class="badge text-bg-success">validated</span>
+                            {% endset %}
+                        {% endif %}
+                        <h2><a data-admin--product--mercurial-target="link" href="{{ path('admin_product_mercurial_detail', {'id' : mercurial.id}) }}">{{ mercurial.supplier.name }}</a>{{ badge }}</h2>
+                        <p>{{ mercurial.filename }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="mercurial_detail_container" class="col-md-8 p-0 border-1 border" data-admin--product--mercurial-target="container">
+        </div>
+    </div>
+{% endblock %}

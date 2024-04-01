@@ -1,0 +1,28 @@
+:root {
+    --sidebar-width: 250px;
+    --admin-active-bg: #050505;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    overflow-y: auto;
+}
+
+.content {
+    overflow-y: auto;
+    padding-left: var(--sidebar-width);
+}
+
+.mercurial-card.active {
+    background-color: var(--admin-active-bg);
+}
+
+#mercurial_detail_container, #mercurial_detail_container > table > * > * > * {
+    background-color: var(--admin-active-bg);
+    color: #eceaea;
+}
+

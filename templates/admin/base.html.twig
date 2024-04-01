@@ -13,14 +13,18 @@
     {% endblock %}
 </head>
 <body data-bs-theme="dark">
-<main class="d-flex flex-nowrap">
-    {% include 'admin/components/nav/nav.html.twig' %}
-    <div class="vh-100 w-100 bg-dark-subtle p-3">
-        <turboframe id="main_content" class="">
-            {% block body %}
-                    <h1>Welcome to your dashboard</h1>
-            {% endblock %}
-        </turboframe>
+<main class="container-fluid vh-100 d-flex flex-nowrap">
+    <div class="container-fluid vh-100 d-flex">
+        {% include 'admin/components/nav/nav.html.twig' %}
+        <div class="flex-grow-1 bg-body content">
+            <div class="p-3">
+                <turbo-frame id="main_content" class="">
+                    {% block body %}
+                        <h1>Welcome to your dashboard</h1>
+                    {% endblock %}
+                </turbo-frame>
+            </div>
+        </div>
     </div>
 </main>
 </body>

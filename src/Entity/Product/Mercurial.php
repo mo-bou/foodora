@@ -4,6 +4,7 @@ namespace App\Entity\Product;
 
 use App\Repository\Product\MercurialRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Workflow\Attribute as Workflow;
 
 #[ORM\Entity(repositoryClass: MercurialRepository::class)]
 class Mercurial
@@ -19,6 +20,14 @@ class Mercurial
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
+
+    #[ORM\Column(type: 'string', length: 25, options: ['default' => 'created'])]
+    private string $status;
+
+    public function validate(): void
+    {
+        $this->status = 'validated';
+    }
 
     public function getId(): ?int
     {
@@ -52,6 +61,18 @@ class Mercurial
     public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

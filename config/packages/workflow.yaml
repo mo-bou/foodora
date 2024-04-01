@@ -1,2 +1,34 @@
 framework:
-    workflows: null
+    workflows: 
+        product_mercurial:
+            type: state_machine
+            supports:
+                App\Entity\Product\Mercurial
+            initial_marking: ['created']
+            places: 
+                - created
+                - validated
+                - imported
+            transitions:
+                validate:
+                    from: created
+                    to: validated
+                import:
+                    from: validated
+                    to: imported
+        product_product_update:
+            type: state_machine
+            supports:
+                App\Entity\Product\ProductUpdate
+            initial_marking: [ 'created' ]
+            places:
+                - created
+                - validated
+                - imported
+            transitions:
+                validate:
+                    from: created
+                    to: validated
+                import:
+                    from: validated
+                    to: imported
